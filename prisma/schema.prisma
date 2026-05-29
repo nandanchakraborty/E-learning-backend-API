@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  passwordHash  String?
+  provider      String   @default("local") // local | google
+  role          String   @default("student") // student | instructor | admin
+
+  isVerified    Boolean  @default(false)
+  isOnboarded   Boolean  @default(false)
+
+  refreshToken   String? // optional (if storing tokens in DB)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  instructorProfile InstructorProfile?
+  enrollments      Enrollment[]
+  purchases        Purchase[]
+  comments         Comment[]
+  reviews          Review[]
+}
+model InstructorProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+
+  bio       String?
+  skills    String?
+  status    String @default("pending") // pending | approved | rejected
+
+  totalStudents Int @default(0)
+  rating        Float @default(0)
+
+  createdAt DateTime @default(now())
+
+  user    User @relation(fields: [userId], references: [id])
+  courses Course[]
+}
+
+model Course {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  price       Float
+
+  instructorProfileId String
+  isPublished         Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  instructorProfile InstructorProfile @relation(fields: [instructorProfileId], references: [id])
+  sections          CourseSection[]
+  lessons           Lesson[]
+  enrollments       Enrollment[]
+  purchases         Purchase[]
+  comments          Comment[]
+  reviews           Review[]
+}
+model CourseSection {
+  id        String @id @default(cuid())
+  courseId  String
+
+  title     String
+  order     Int
+
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id])
+  lessons Lesson[]
+}
+model Lesson {
+  id        String @id @default(cuid())
+  courseId  String
+  courseSectionId String
+
+  title     String
+  videoUrl  String
+  order     Int
+
+  createdAt DateTime @default(now())
+  section   CourseSection @relation(fields: [courseSectionId], references: [id])
+  course    Course @relation(fields: [courseId], references: [id])
+}
+model Purchase {
+  id        String @id @default(cuid())
+  userId    String
+  courseId  String
+
+  amount    Float
+  status    String // pending | success | failed
+
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+}
+model Enrollment {
+  id        String @id @default(cuid())
+  userId    String
+  courseId  String
+
+  progress  Int @default(0) // percentage
+
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+}
+model Comment {
+  id        String @id @default(cuid())
+  userId    String
+  courseId  String
+
+  content   String
+
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+}
+model Review {
+  id        String @id @default(cuid())
+  userId    String
+  courseId  String
+
+  rating    Int
+  comment   String?
+
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+}
