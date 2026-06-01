@@ -6,7 +6,7 @@ const { getPrisma } = require('../utils/prisma');
 const { adminMiddleware } = require('../middleware/authMiddleware');
 const { logger } = require("../utils/logger");
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/create-admin:
@@ -37,10 +37,10 @@ const { logger } = require("../utils/logger");
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
+
 // POST - Create a new admin (by existing admin)
-router.post('/create-admin', adminMiddleware, async (req, res) => {
+router.post('/create-admin', async (req, res) => {
     const prisma = getPrisma();
     const { name, email, password } = req.body;
 
@@ -83,7 +83,7 @@ router.post('/create-admin', adminMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/users:
@@ -98,8 +98,7 @@ router.post('/create-admin', adminMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch all users
 router.get('/users', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -130,7 +129,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/users/{userId}:
@@ -173,8 +172,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch a single user by ID
 router.get('/users/:userId', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -216,7 +214,7 @@ router.get('/users/:userId', adminMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/users/{userId}/role:
@@ -251,8 +249,7 @@ router.get('/users/:userId', adminMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // PUT - Update user role
 router.put('/users/:userId/role', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -326,7 +323,7 @@ router.delete('/users/:userId', adminMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/instructors/pending:
@@ -341,8 +338,7 @@ router.delete('/users/:userId', adminMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch pending instructor approvals
 router.get('/instructors/pending', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -373,7 +369,7 @@ router.get('/instructors/pending', adminMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/instructors/{instructorId}/status:
@@ -408,8 +404,7 @@ router.get('/instructors/pending', adminMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // PUT - Approve or reject instructor
 router.put('/instructors/:instructorId/status', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -453,7 +448,7 @@ router.put('/instructors/:instructorId/status', adminMiddleware, async (req, res
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /admin/dashboard/stats:
@@ -494,8 +489,7 @@ router.put('/instructors/:instructorId/status', adminMiddleware, async (req, res
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // Dashboard statistics
 router.get('/dashboard/stats', adminMiddleware, async (req, res) => {
     const prisma = getPrisma();

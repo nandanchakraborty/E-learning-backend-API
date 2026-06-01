@@ -42,15 +42,14 @@ router.post('/update-profile',instructorMiddleware,async(req,res)=>{
     const prisma = getPrisma();
     
     try{
-<<<<<<< HEAD
+
         if (!prisma) {
             return res.status(500).json({error: 'Database connection failed'});
         }
 
         if(!bio || !expertise || !linkedin){
-=======
-        if(!bio || !skills){
->>>>>>> feature/student-purchase-enrollment
+
+  
             return res.status(400).json({msg:'Need to fulfill all fields'})
         }
 
@@ -121,15 +120,13 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
     const {title,description,price} = req.body;
     
     try{
-<<<<<<< HEAD
+
         if (!prisma) {
             return res.status(500).json({error: 'Database connection failed'});
         }
 
         if(!title||!description||!price||!level){
-=======
-        if(!title||!description||!price){
->>>>>>> feature/student-purchase-enrollment
+
            return res.status(400).json({msg:'Need to fill all fields'})
         }
 
@@ -395,9 +392,7 @@ router.delete('/course/:courseId', instructorMiddleware, async(req,res)=>{
     }
 })
 
-<<<<<<< HEAD
-  
-=======
+
 //section management
 
 router.post('/course/:courseId/section',instructorMiddleware,async(req,res)=>{
@@ -699,7 +694,7 @@ router.delete('/lesson/:lessonId', instructorMiddleware, async(req,res)=>{
     }
 })
 
->>>>>>> feature/student-purchase-enrollment
+
 
 
 

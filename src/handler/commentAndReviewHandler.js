@@ -5,7 +5,7 @@ const { getPrisma } = require('../utils/prisma');
 const { studentMiddleware } = require('../middleware/authMiddleware');
 const { logger } = require("../utils/logger");
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/comment/{courseId}:
@@ -39,8 +39,7 @@ const { logger } = require("../utils/logger");
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // POST - Create a new comment
 router.post('/comment/:courseId', studentMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -85,7 +84,7 @@ router.post('/comment/:courseId', studentMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/comment/course/{courseId}:
@@ -104,8 +103,7 @@ router.post('/comment/:courseId', studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch all comments for a course
 router.get('/comment/course/:courseId', async (req, res) => {
     const prisma = getPrisma();
@@ -142,7 +140,7 @@ router.get('/comment/course/:courseId', async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/comment/{commentId}:
@@ -212,8 +210,7 @@ router.get('/comment/course/:courseId', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch a single comment by ID
 router.get('/comment/:commentId', async (req, res) => {
     const prisma = getPrisma();
@@ -337,7 +334,7 @@ router.delete('/comment/:commentId', studentMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/review/{courseId}:
@@ -375,9 +372,7 @@ router.delete('/comment/:commentId', studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
 
->>>>>>> admin-dashboard
 // POST - Create a new review
 router.post('/review/:courseId', studentMiddleware, async (req, res) => {
     const prisma = getPrisma();
@@ -424,7 +419,7 @@ router.post('/review/:courseId', studentMiddleware, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/review/course/{courseId}:
@@ -443,8 +438,7 @@ router.post('/review/:courseId', studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 router.get('/review/course/:courseId', async (req, res) => {
     const prisma = getPrisma();
     const { courseId } = req.params;
@@ -485,7 +479,7 @@ router.get('/review/course/:courseId', async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
+
 /**
  * @swagger
  * /cmtReview/review/{reviewId}:
@@ -559,8 +553,7 @@ router.get('/review/course/:courseId', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-=======
->>>>>>> admin-dashboard
+
 // GET - Fetch a single review by ID
 router.get('/review/:reviewId', async (req, res) => {
     const prisma = getPrisma();
