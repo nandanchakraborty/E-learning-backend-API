@@ -5,6 +5,7 @@ const { getPrisma } = require("../utils/prisma");
 const { studentMiddleware } = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/purchase/{courseId}:
@@ -43,6 +44,8 @@ const { logger } = require("../utils/logger");
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { courseId } = req.params;
@@ -50,10 +53,13 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	const { amount, status } = req.body;
 
 	try {
+<<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
 		if (!amount || !status) {
 			return res
 				.status(400)
@@ -101,6 +107,7 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	}
 });
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/purchases:
@@ -115,15 +122,20 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 router.get("/purchases", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const userId = req.userId;
 
 	try {
+<<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
 		const purchases = await prisma.purchase.findMany({
 			where: { userId: userId },
 			include: { course: true },
@@ -138,6 +150,7 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
 	}
 });
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/purchase/{purchaseId}:
@@ -162,16 +175,21 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { purchaseId } = req.params;
 	const userId = req.userId;
 
 	try {
+<<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
 		const purchase = await prisma.purchase.findUnique({
 			where: { id: purchaseId },
 			include: { course: true },
@@ -196,6 +214,7 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	}
 });
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/enrollment/{purchaseId}:
@@ -222,6 +241,8 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 //enrollment
 
 router.post(
@@ -232,10 +253,13 @@ router.post(
 		const { purchaseId } = req.params;
 		const userId = req.userId;
 		try {
+<<<<<<< HEAD
 			if (!prisma) {
 				return res.status(500).json({msg: 'Database connection failed'});
 			}
 
+=======
+>>>>>>> admin-dashboard
 			const purchase = await prisma.purchase.findUnique({
 				where: { id: purchaseId },
 				include: { course: true },
@@ -289,6 +313,7 @@ router.post(
 	},
 );
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/enrollments:
@@ -303,14 +328,19 @@ router.post(
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 router.get("/enrollments", studentMiddleware, async (req, res) => {
 	const userId = req.userId;
 	const prisma = getPrisma();
     try {
+<<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
         const enrollments = await prisma.enrollment.findMany({
             where: { userId: userId },
             include: { course: true }
@@ -324,6 +354,7 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/enrollment/{enrollmentId}:
@@ -368,16 +399,21 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
+=======
+>>>>>>> admin-dashboard
 router.get("/enrollment/:enrollmentId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { enrollmentId } = req.params;
 	const userId = req.userId;
 
     try {
+<<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId },
             include: { course: true }
@@ -406,10 +442,13 @@ router.delete("/enrollment/:enrollmentId", studentMiddleware, async (req, res) =
 	const userId = req.userId;
 
     try {
+<<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
+=======
+>>>>>>> admin-dashboard
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId }
         });
@@ -435,4 +474,43 @@ router.delete("/enrollment/:enrollmentId", studentMiddleware, async (req, res) =
     }
 });
 
+<<<<<<< HEAD
+=======
+
+//protected lesson access
+router.get('/protectedLesson/:courseId/:courseSectionId',studentMiddleware,async(req,res)=>{
+		const prisma = getPrisma();
+	const userId = req.userId;
+	const {courseId,courseSectionId} = req.params
+
+    try {
+        const enrollment = await prisma.enrollment.findUnique({
+            where: { id: userId }
+        });
+
+        if (!enrollment) {
+            return res.status(404).json({msg: 'Enrollment not found'});
+        }
+
+        if (enrollment.userId !== userId) {
+            return res.status(403).json({msg: 'Access denied. You can only delete your own enrollments'});
+        }
+		const lessons = await prisma.lesson.findUnique({
+			where:{courseId:courseId,courseSectionId:courseSectionId}
+		})
+		if(lessons){
+			return res.status(200).json({lessons:lessons,msg:'Lesson found'})
+		}else{
+			return res.status(400).json({msg:'invalid couse section id'});
+		}
+	}catch(err){
+		console.log(err);
+		return res.status(500).json({msg: 'internal server error'});
+
+
+	}
+})
+
+
+>>>>>>> admin-dashboard
 module.exports = router;
