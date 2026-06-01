@@ -37,6 +37,8 @@ model InstructorProfile {
   userId    String  @unique
 
   bio       String?
+  expertise String?
+  linkedin  String?
   skills    String?
   status    String @default("pending") // pending | approved | rejected
 
@@ -54,7 +56,7 @@ model Course {
   title       String
   description String
   price       Float
-
+  level       String
   instructorProfileId String
   isPublished         Boolean @default(false)
 

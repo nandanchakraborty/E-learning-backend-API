@@ -50,6 +50,40 @@ async function sendOTPEmail(email, otp) {
 	});
 }
 
+/**
+ * @swagger
+ * /user/email-register:
+ *   post:
+ *     summary: Register a new user with email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [student, instructor]
+ *               otp:
+ *                 type: string
+ *                 description: OTP for verification (send empty first to get OTP)
+ *     responses:
+ *       200:
+ *         description: OTP sent or registration successful
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/email-register", async (req, res) => {
 	const { name, email, password, role, otp } = req.body;
 	if (!name || !role || !email || !password) {
@@ -117,6 +151,45 @@ router.post("/email-register", async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /user/email-login:
+ *   post:
+ *     summary: Login with email and password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *       400:
+ *         description: Missing credentials
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/email-login", async (req, res) => {
 	const { email, password } = req.body;
 	const prisma = getPrisma();
@@ -165,6 +238,45 @@ router.post("/email-login", async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /user/google-login:
+ *   post:
+ *     summary: Login with Google OAuth token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Google ID token from Google Sign-In
+ *               role:
+ *                 type: string
+ *                 enum: [student, instructor]
+ *                 description: User role (optional, defaults to student)
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *       400:
+ *         description: Missing Google token
+ *       500:
+ *         description: Google authentication failed
+ */
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 router.post("/google-login", async (req, res) => {
@@ -224,6 +336,36 @@ router.post("/google-login", async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /user/refresh:
+ *   post:
+ *     summary: Refresh access token using refresh token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 accessToken:
+ *                   type: string
+ *       401:
+ *         description: Invalid or expired refresh token
+ *       500:
+ *         description: Token generation failed
+ */
 //RefreshToken verification
 router.post("/refresh", verifyRefresh, (req, res) => {
 	try {

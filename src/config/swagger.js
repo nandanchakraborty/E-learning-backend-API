@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'E-Learning API',
       version: '1.0.0',
-      description: 'Comprehensive E-Learning Platform API with user authentication, courses, and enrollment management',
+      description: 'Comprehensive E-Learning Platform API with user authentication, courses, enrollment, comments, reviews, and admin management',
     },
     servers: [
       {
@@ -27,61 +27,64 @@ const options = {
         User: {
           type: 'object',
           properties: {
-            id: {
-              type: 'string',
-              description: 'User ID (CUID)',
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            role: { type: 'string', enum: ['student', 'instructor', 'admin'] },
+            provider: { type: 'string', enum: ['local', 'google'] },
+            isVerified: { type: 'boolean' },
+            isOnboarded: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        Comment: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            userId: { type: 'string' },
+            courseId: { type: 'string' },
+            content: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+              },
             },
-            name: {
-              type: 'string',
-              description: 'User full name',
-            },
-            email: {
-              type: 'string',
-              format: 'email',
-              description: 'User email address',
-            },
-            provider: {
-              type: 'string',
-              enum: ['local', 'google'],
-              description: 'Authentication provider',
-            },
-            role: {
-              type: 'string',
-              enum: ['student', 'instructor'],
-              description: 'User role',
-            },
-            isVerified: {
-              type: 'boolean',
-              description: 'Email verification status',
-            },
-            isOnboarded: {
-              type: 'boolean',
-              description: 'Onboarding completion status',
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
-              description: 'Account creation timestamp',
+          },
+        },
+        Review: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            userId: { type: 'string' },
+            courseId: { type: 'string' },
+            rating: { type: 'integer', minimum: 1, maximum: 5 },
+            comment: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+              },
             },
           },
         },
         Error: {
           type: 'object',
           properties: {
-            error: {
-              type: 'string',
-              description: 'Error message',
-            },
-            statusCode: {
-              type: 'number',
-              description: 'HTTP status code',
-            },
+            msg: { type: 'string' },
+            error: { type: 'string' },
           },
         },
       },
     },
   },
-  apis: ['./src/routes/*.js'],
+  apis: ['./src/handler/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

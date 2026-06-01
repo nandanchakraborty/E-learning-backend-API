@@ -5,6 +5,44 @@ const { getPrisma } = require("../utils/prisma");
 const { studentMiddleware } = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
 
+/**
+ * @swagger
+ * /stu/purchase/{courseId}:
+ *   post:
+ *     summary: Purchase a course (student only)
+ *     tags: [Student - Purchases]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 description: Purchase amount (must match course price)
+ *               status:
+ *                 type: string
+ *                 enum: [pending, success, failed]
+ *                 description: Payment status
+ *     responses:
+ *       201:
+ *         description: Purchase created successfully
+ *       400:
+ *         description: Invalid amount or missing fields
+ *       404:
+ *         description: Course not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { courseId } = req.params;
@@ -12,6 +50,10 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	const { amount, status } = req.body;
 
 	try {
+		if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
 		if (!amount || !status) {
 			return res
 				.status(400)
@@ -59,11 +101,29 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /stu/purchases:
+ *   get:
+ *     summary: Get all purchases by student (student only)
+ *     tags: [Student - Purchases]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of purchases
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/purchases", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const userId = req.userId;
 
 	try {
+		if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
 		const purchases = await prisma.purchase.findMany({
 			where: { userId: userId },
 			include: { course: true },
@@ -78,12 +138,40 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /stu/purchase/{purchaseId}:
+ *   get:
+ *     summary: Get purchase details (student only)
+ *     tags: [Student - Purchases]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: purchaseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Purchase details
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Purchase not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { purchaseId } = req.params;
 	const userId = req.userId;
 
 	try {
+		if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
 		const purchase = await prisma.purchase.findUnique({
 			where: { id: purchaseId },
 			include: { course: true },
@@ -108,6 +196,32 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /stu/enrollment/{purchaseId}:
+ *   post:
+ *     summary: Enroll in course using purchase (student only)
+ *     tags: [Student - Enrollment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: purchaseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Enrollment successful
+ *       400:
+ *         description: Already enrolled or invalid purchase
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Purchase not found
+ *       500:
+ *         description: Internal server error
+ */
 //enrollment
 
 router.post(
@@ -118,6 +232,10 @@ router.post(
 		const { purchaseId } = req.params;
 		const userId = req.userId;
 		try {
+			if (!prisma) {
+				return res.status(500).json({msg: 'Database connection failed'});
+			}
+
 			const purchase = await prisma.purchase.findUnique({
 				where: { id: purchaseId },
 				include: { course: true },
@@ -171,10 +289,28 @@ router.post(
 	},
 );
 
+/**
+ * @swagger
+ * /stu/enrollments:
+ *   get:
+ *     summary: Get all enrollments for student (student only)
+ *     tags: [Student - Enrollment]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of enrollments
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/enrollments", studentMiddleware, async (req, res) => {
 	const userId = req.userId;
 	const prisma = getPrisma();
     try {
+        if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
         const enrollments = await prisma.enrollment.findMany({
             where: { userId: userId },
             include: { course: true }
@@ -188,12 +324,60 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /stu/enrollment/{enrollmentId}:
+ *   get:
+ *     summary: Get enrollment details (student only)
+ *     tags: [Student - Enrollment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: enrollmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Enrollment details
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Enrollment not found
+ *       500:
+ *         description: Internal server error
+ *   delete:
+ *     summary: Delete enrollment (student only)
+ *     tags: [Student - Enrollment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: enrollmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Enrollment deleted successfully
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Enrollment not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/enrollment/:enrollmentId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { enrollmentId } = req.params;
 	const userId = req.userId;
 
     try {
+        if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId },
             include: { course: true }
@@ -222,6 +406,10 @@ router.delete("/enrollment/:enrollmentId", studentMiddleware, async (req, res) =
 	const userId = req.userId;
 
     try {
+        if (!prisma) {
+			return res.status(500).json({msg: 'Database connection failed'});
+		}
+
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId }
         });

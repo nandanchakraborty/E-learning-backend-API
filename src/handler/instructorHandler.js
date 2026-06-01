@@ -5,11 +5,47 @@ const { getPrisma } = require("../utils/prisma");
 const { instructorMiddleware } = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
 
+/**
+ * @swagger
+ * /ins/update-profile:
+ *   post:
+ *     summary: Update instructor profile (instructor only)
+ *     tags: [Instructor]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bio:
+ *                 type: string
+ *                 description: Instructor biography
+ *               expertise:
+ *                 type: string
+ *                 description: Areas of expertise
+ *               linkedin:
+ *                 type: string
+ *                 description: LinkedIn profile URL
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/update-profile',instructorMiddleware,async(req,res)=>{
     const {bio,expertise,linkedin} = req.body
     const prisma = getPrisma();
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         if(!bio || !expertise || !linkedin){
             return res.status(400).json({msg:'Need to fulfill all fields'})
         }
@@ -40,11 +76,53 @@ router.post('/update-profile',instructorMiddleware,async(req,res)=>{
     }
 })
 
+/**
+ * @swagger
+ * /ins/add-course:
+ *   post:
+ *     summary: Add a new course (instructor only)
+ *     tags: [Instructor - Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Course title
+ *               description:
+ *                 type: string
+ *                 description: Course description
+ *               price:
+ *                 type: number
+ *                 description: Course price
+ *               level:
+ *                 type: string
+ *                 enum: [beginner, intermediate, advanced]
+ *                 description: Course difficulty level
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Instructor profile not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/add-course',instructorMiddleware,async(req,res)=>{
     const prisma = getPrisma();
     const {title,description,price,level} = req.body;
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         if(!title||!description||!price||!level){
            return res.status(400).json({msg:'Need to fill all fields'})
         }
@@ -84,10 +162,30 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
     }
 })
 
+/**
+ * @swagger
+ * /ins/my-courses:
+ *   get:
+ *     summary: Get all courses created by instructor (instructor only)
+ *     tags: [Instructor - Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of courses
+ *       404:
+ *         description: Instructor profile not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/my-courses', instructorMiddleware, async(req,res)=>{
     const prisma = getPrisma();
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         const instructorProfile = await prisma.instructorProfile.findUnique({
             where: { userId: req.userId },
             include: { courses: true }
@@ -109,11 +207,93 @@ router.get('/my-courses', instructorMiddleware, async(req,res)=>{
     }
 })
 
+/**
+ * @swagger
+ * /ins/course/{courseId}:
+ *   get:
+ *     summary: Get course details (instructor only)
+ *     tags: [Instructor - Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Course details
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Course not found
+ *       500:
+ *         description: Internal server error
+ *   put:
+ *     summary: Update course (instructor only)
+ *     tags: [Instructor - Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               level:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Course updated successfully
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Course not found
+ *       500:
+ *         description: Internal server error
+ *   delete:
+ *     summary: Delete course (instructor only)
+ *     tags: [Instructor - Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Course deleted successfully
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Course not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/course/:courseId', instructorMiddleware, async(req,res)=>{
     const prisma = getPrisma();
     const {courseId} = req.params;
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         const course = await prisma.course.findUnique({
             where: { id: courseId },
             include: { instructorProfile: true }
@@ -140,6 +320,10 @@ router.put('/course/:courseId', instructorMiddleware, async(req,res)=>{
     const {title, description, price, level} = req.body;
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         const course = await prisma.course.findUnique({
             where: { id: courseId },
             include: { instructorProfile: true }
@@ -180,6 +364,10 @@ router.delete('/course/:courseId', instructorMiddleware, async(req,res)=>{
     const {courseId} = req.params;
     
     try{
+        if (!prisma) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+
         const course = await prisma.course.findUnique({
             where: { id: courseId },
             include: { instructorProfile: true }
@@ -204,13 +392,7 @@ router.delete('/course/:courseId', instructorMiddleware, async(req,res)=>{
     }
 })
 
-
-
-
-
-
-
-
+  
 
 
 
