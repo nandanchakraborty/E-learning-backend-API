@@ -38,15 +38,19 @@ const { logger } = require("../utils/logger");
  *         description: Internal server error
  */
 router.post('/update-profile',instructorMiddleware,async(req,res)=>{
-    const {bio,expertise,linkedin} = req.body
+    const {bio,skills} = req.body
     const prisma = getPrisma();
     
     try{
+<<<<<<< HEAD
         if (!prisma) {
             return res.status(500).json({error: 'Database connection failed'});
         }
 
         if(!bio || !expertise || !linkedin){
+=======
+        if(!bio || !skills){
+>>>>>>> feature/student-purchase-enrollment
             return res.status(400).json({msg:'Need to fulfill all fields'})
         }
 
@@ -54,14 +58,12 @@ router.post('/update-profile',instructorMiddleware,async(req,res)=>{
             where: { userId: req.userId },
             update: {
                 bio,
-                expertise,
-                linkedin
+                skills
             },
             create: {
                 userId: req.userId,
                 bio,
-                expertise,
-                linkedin
+                skills
             }
         });
 
@@ -116,14 +118,18 @@ router.post('/update-profile',instructorMiddleware,async(req,res)=>{
  */
 router.post('/add-course',instructorMiddleware,async(req,res)=>{
     const prisma = getPrisma();
-    const {title,description,price,level} = req.body;
+    const {title,description,price} = req.body;
     
     try{
+<<<<<<< HEAD
         if (!prisma) {
             return res.status(500).json({error: 'Database connection failed'});
         }
 
         if(!title||!description||!price||!level){
+=======
+        if(!title||!description||!price){
+>>>>>>> feature/student-purchase-enrollment
            return res.status(400).json({msg:'Need to fill all fields'})
         }
 
@@ -140,7 +146,6 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
                 title,
                 description,
                 price: parseFloat(price),
-                level,
                 instructorProfileId: instructorProfile.id,
             },
             select:{
@@ -148,7 +153,6 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
                 title:true,
                 description:true,
                 price:true,
-                level:true,
                 instructorProfileId:true,
             },
         });
@@ -317,7 +321,7 @@ router.get('/course/:courseId', instructorMiddleware, async(req,res)=>{
 router.put('/course/:courseId', instructorMiddleware, async(req,res)=>{
     const prisma = getPrisma();
     const {courseId} = req.params;
-    const {title, description, price, level} = req.body;
+    const {title, description, price} = req.body;
     
     try{
         if (!prisma) {
@@ -341,7 +345,6 @@ router.put('/course/:courseId', instructorMiddleware, async(req,res)=>{
         if (title) updateData.title = title;
         if (description) updateData.description = description;
         if (price) updateData.price = parseFloat(price);
-        if (level) updateData.level = level;
 
         const updatedCourse = await prisma.course.update({
             where: { id: courseId },
@@ -392,7 +395,311 @@ router.delete('/course/:courseId', instructorMiddleware, async(req,res)=>{
     }
 })
 
+<<<<<<< HEAD
   
+=======
+//section management
+
+router.post('/course/:courseId/section',instructorMiddleware,async(req,res)=>{
+  const prisma = getPrisma();
+    const {courseId} = req.params; 
+       try{
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only delete your own courses'});
+        }
+        const{title,order} = req.body;
+        const courseSection = await prisma.courseSection.create({
+            data:{
+                courseId,
+                title,
+                order,
+
+            },
+            select:{
+                id : true,
+                courseId: true,
+                title:true,
+                order: true,
+                createdAt: true,
+                
+            },
+        })
+        return res.status(201).json({course, msg:'Course section created successfully'});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg:'internal server error'})
+    }  
+
+})
+
+
+router.get('/course/:courseId/section',instructorMiddleware,async(req,res)=>{
+const prisma = getPrisma();
+    const {courseId} = req.params; 
+       try{
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only delete your own courses'});
+        }
+        const result = await prisma.courseSection.findUnique({
+            where:{id:courseId},
+            include:{
+                course:true,
+                lessons: true,
+            }
+        })
+        return res.status(200).json({allSection: result,
+            msg:"section fetch successfull"
+        })
+    }catch(err){
+        console.log(er);
+        return res.status(500).json({msg: 'internal server error'});
+
+
+    }
+
+})
+
+router.put('/course/:courseId/section/:sectionId', instructorMiddleware, async(req,res)=>{
+    const prisma = getPrisma();
+    const {courseId, sectionId} = req.params;
+    const {title, order} = req.body;
+    
+    try{
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only update your own courses'});
+        }
+
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (order) updateData.order = order;
+
+        const updatedSection = await prisma.courseSection.update({
+            where: { id: sectionId },
+            data: updateData
+        });
+
+        return res.status(200).json({
+            section: updatedSection,
+            msg: 'Section updated successfully'
+        });
+
+    }catch(err){
+        logger.error('Update section error:', err.message);
+        return res.status(500).json({error: 'Internal server error'});
+    }
+})
+
+router.delete('/course/:courseId/section/:sectionId', instructorMiddleware, async(req,res)=>{
+    const prisma = getPrisma();
+    const {courseId, sectionId} = req.params;
+    
+    try{
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only delete your own courses'});
+        }
+
+        await prisma.courseSection.delete({
+            where: { id: sectionId }
+        });
+
+        return res.status(200).json({msg: 'Section deleted successfully'});
+
+    }catch(err){
+        logger.error('Delete section error:', err.message);
+        return res.status(500).json({error: 'Internal server error'});
+    }
+})
+
+
+
+//lesson management
+router.post('/lesson/:courseId/section/:sectionId',instructorMiddleware,async(req,res)=>{
+    const prisma = getPrisma();
+    const {courseId, sectionId} = req.params;
+    const {title, videoUrl, order} = req.body;
+    
+    try{
+        if(!title || !videoUrl || !order) {
+            return res.status(400).json({msg: 'Need to fill all fields'});
+        }
+
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only add lesson on your own courses'});
+        }
+
+        const lesson = await prisma.lesson.create({
+            data:{
+                title,
+                videoUrl,
+                order,
+                courseId,
+                courseSectionId: sectionId
+            },
+            select:{
+                id : true,
+                courseId: true,
+                courseSectionId: true,
+                title: true,
+                videoUrl: true,
+                order: true,
+                createdAt: true
+            },
+        });
+        return res.status(201).json({lesson: lesson, msg:'Lesson added successfully'});
+
+    }catch(err){
+        logger.error('Add lesson error:', err.message);
+        return res.status(500).json({msg:'Internal server error'});
+    }
+})
+
+router.get('/lesson/:courseId/section/:sectionId', instructorMiddleware, async(req,res)=>{
+    const prisma = getPrisma();
+    const {courseId, sectionId} = req.params;
+    
+    try{
+        const course = await prisma.course.findUnique({
+            where: { id: courseId },
+            include: { instructorProfile: true }
+        });
+
+        if (!course) {
+            return res.status(404).json({msg: 'Course not found'});
+        }
+
+        if (course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only view your own courses'});
+        }
+
+        const lessons = await prisma.lesson.findMany({
+            where: { courseSectionId: sectionId }
+        });
+
+        return res.status(200).json({lessons: lessons, total: lessons.length});
+
+    }catch(err){
+        logger.error('Fetch lessons error:', err.message);
+        return res.status(500).json({msg:'Internal server error'});
+    }
+})
+
+router.put('/lesson/:lessonId', instructorMiddleware, async(req,res)=>{
+    const prisma = getPrisma();
+    const {lessonId} = req.params;
+    const {title, videoUrl, order} = req.body;
+    
+    try{
+        const lesson = await prisma.lesson.findUnique({
+            where: { id: lessonId },
+            include: { course: { include: { instructorProfile: true } } }
+        });
+
+        if (!lesson) {
+            return res.status(404).json({msg: 'Lesson not found'});
+        }
+
+        if (lesson.course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only update your own lessons'});
+        }
+
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (videoUrl) updateData.videoUrl = videoUrl;
+        if (order) updateData.order = order;
+
+        const updatedLesson = await prisma.lesson.update({
+            where: { id: lessonId },
+            data: updateData
+        });
+
+        return res.status(200).json({
+            lesson: updatedLesson,
+            msg: 'Lesson updated successfully'
+        });
+
+    }catch(err){
+        logger.error('Update lesson error:', err.message);
+        return res.status(500).json({error: 'Internal server error'});
+    }
+})
+
+router.delete('/lesson/:lessonId', instructorMiddleware, async(req,res)=>{
+    const prisma = getPrisma();
+    const {lessonId} = req.params;
+    
+    try{
+        const lesson = await prisma.lesson.findUnique({
+            where: { id: lessonId },
+            include: { course: { include: { instructorProfile: true } } }
+        });
+
+        if (!lesson) {
+            return res.status(404).json({msg: 'Lesson not found'});
+        }
+
+        if (lesson.course.instructorProfile.userId !== req.userId) {
+            return res.status(403).json({msg: 'Access denied. You can only delete your own lessons'});
+        }
+
+        await prisma.lesson.delete({
+            where: { id: lessonId }
+        });
+
+        return res.status(200).json({msg: 'Lesson deleted successfully'});
+
+    }catch(err){
+        logger.error('Delete lesson error:', err.message);
+        return res.status(500).json({error: 'Internal server error'});
+    }
+})
+
+>>>>>>> feature/student-purchase-enrollment
 
 
 

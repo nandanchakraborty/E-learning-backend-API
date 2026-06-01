@@ -6,8 +6,10 @@ const { logger, morganLogger } = require('./utils/logger');
 const userHandler = require('../src/handler/userHandler');
 const instructorHandler = require('../src/handler/instructorHandler');
 const studentHandler = require('../src/handler/studentHandler');
+
 const cmtAndReviewHandler = require('../src/handler/commentAndReviewHandler');
 const adminHandler = require('../src/handler/adminHandler');
+
 
 const app = express();
 
@@ -18,9 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morganLogger);
 app.use('/user',userHandler);
 app.use('/ins',instructorHandler);
+
 app.use('/stu',studentHandler);
 app.use('/cmtReview',cmtAndReviewHandler);
 app.use('/admin',adminHandler);
+
 
 
 // Swagger Documentation

@@ -6,6 +6,7 @@ const { studentMiddleware } = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/purchase/{courseId}:
@@ -46,6 +47,8 @@ const { logger } = require("../utils/logger");
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { courseId } = req.params;
@@ -54,12 +57,15 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 
 	try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 		if (!amount || !status) {
 			return res
 				.status(400)
@@ -108,6 +114,7 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/purchases:
@@ -124,11 +131,14 @@ router.post("/purchase/:courseId", studentMiddleware, async (req, res) => {
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 router.get("/purchases", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const userId = req.userId;
 
 	try {
+<<<<<<< HEAD
 <<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
@@ -136,6 +146,8 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 		const purchases = await prisma.purchase.findMany({
 			where: { userId: userId },
 			include: { course: true },
@@ -150,6 +162,7 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
 	}
 });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /**
  * @swagger
@@ -177,6 +190,8 @@ router.get("/purchases", studentMiddleware, async (req, res) => {
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { purchaseId } = req.params;
@@ -184,12 +199,15 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 
 	try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 		const purchase = await prisma.purchase.findUnique({
 			where: { id: purchaseId },
 			include: { course: true },
@@ -214,6 +232,7 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
 	}
 });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /**
  * @swagger
@@ -243,6 +262,8 @@ router.get("/purchase/:purchaseId", studentMiddleware, async (req, res) => {
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 //enrollment
 
 router.post(
@@ -254,12 +275,15 @@ router.post(
 		const userId = req.userId;
 		try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if (!prisma) {
 				return res.status(500).json({msg: 'Database connection failed'});
 			}
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 			const purchase = await prisma.purchase.findUnique({
 				where: { id: purchaseId },
 				include: { course: true },
@@ -314,6 +338,7 @@ router.post(
 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /**
  * @swagger
  * /stu/enrollments:
@@ -330,10 +355,13 @@ router.post(
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 router.get("/enrollments", studentMiddleware, async (req, res) => {
 	const userId = req.userId;
 	const prisma = getPrisma();
     try {
+<<<<<<< HEAD
 <<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
@@ -341,6 +369,8 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
         const enrollments = await prisma.enrollment.findMany({
             where: { userId: userId },
             include: { course: true }
@@ -354,6 +384,7 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /**
  * @swagger
@@ -401,6 +432,8 @@ router.get("/enrollments", studentMiddleware, async (req, res) => {
  */
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 router.get("/enrollment/:enrollmentId", studentMiddleware, async (req, res) => {
 	const prisma = getPrisma();
 	const { enrollmentId } = req.params;
@@ -408,12 +441,15 @@ router.get("/enrollment/:enrollmentId", studentMiddleware, async (req, res) => {
 
     try {
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId },
             include: { course: true }
@@ -443,12 +479,15 @@ router.delete("/enrollment/:enrollmentId", studentMiddleware, async (req, res) =
 
     try {
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (!prisma) {
 			return res.status(500).json({msg: 'Database connection failed'});
 		}
 
 =======
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId }
         });
@@ -474,6 +513,7 @@ router.delete("/enrollment/:enrollmentId", studentMiddleware, async (req, res) =
     }
 });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -513,4 +553,6 @@ router.get('/protectedLesson/:courseId/:courseSectionId',studentMiddleware,async
 
 
 >>>>>>> admin-dashboard
+=======
+>>>>>>> feature/student-purchase-enrollment
 module.exports = router;
