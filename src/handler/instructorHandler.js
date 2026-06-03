@@ -117,7 +117,7 @@ router.post('/update-profile',instructorMiddleware,async(req,res)=>{
  */
 router.post('/add-course',instructorMiddleware,async(req,res)=>{
     const prisma = getPrisma();
-    const {title,description,price} = req.body;
+    const {title,description,price,categoryId} = req.body;
     
     try{
 
@@ -125,9 +125,9 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
             return res.status(500).json({error: 'Database connection failed'});
         }
 
-        if(!title||!description||!price||!level){
+        if(!title||!description||!price){
 
-           return res.status(400).json({msg:'Need to fill all fields'})
+           return res.status(400).json({msg:'Need to fill all fields: title, description, price'})
         }
 
         const instructorProfile = await prisma.instructorProfile.findUnique({
@@ -138,11 +138,21 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
             return res.status(404).json({msg: 'Instructor profile not found'});
         }
 
+        if (categoryId) {
+            const category = await prisma.category.findUnique({
+                where: { id: categoryId }
+            });
+            if (!category) {
+                return res.status(404).json({msg: 'Category not found'});
+            }
+        }
+
         const course = await prisma.course.create({
             data:{
                 title,
                 description,
                 price: parseFloat(price),
+                categoryId: categoryId || null,
                 instructorProfileId: instructorProfile.id,
             },
             select:{
@@ -150,6 +160,7 @@ router.post('/add-course',instructorMiddleware,async(req,res)=>{
                 title:true,
                 description:true,
                 price:true,
+                categoryId:true,
                 instructorProfileId:true,
             },
         });
@@ -189,7 +200,11 @@ router.get('/my-courses', instructorMiddleware, async(req,res)=>{
 
         const instructorProfile = await prisma.instructorProfile.findUnique({
             where: { userId: req.userId },
-            include: { courses: true }
+            include: { 
+                courses: {
+                    include: { category: true }
+                }
+            }
         });
 
         if (!instructorProfile) {
@@ -297,7 +312,10 @@ router.get('/course/:courseId', instructorMiddleware, async(req,res)=>{
 
         const course = await prisma.course.findUnique({
             where: { id: courseId },
-            include: { instructorProfile: true }
+            include: { 
+                instructorProfile: true,
+                category: true
+            }
         });
 
         if (!course) {
@@ -318,7 +336,7 @@ router.get('/course/:courseId', instructorMiddleware, async(req,res)=>{
 router.put('/course/:courseId', instructorMiddleware, async(req,res)=>{
     const prisma = getPrisma();
     const {courseId} = req.params;
-    const {title, description, price} = req.body;
+    const {title, description, price, categoryId} = req.body;
     
     try{
         if (!prisma) {
@@ -338,14 +356,25 @@ router.put('/course/:courseId', instructorMiddleware, async(req,res)=>{
             return res.status(403).json({msg: 'Access denied. You can only update your own courses'});
         }
 
+        if (categoryId) {
+            const category = await prisma.category.findUnique({
+                where: { id: categoryId }
+            });
+            if (!category) {
+                return res.status(404).json({msg: 'Category not found'});
+            }
+        }
+
         const updateData = {};
         if (title) updateData.title = title;
         if (description) updateData.description = description;
         if (price) updateData.price = parseFloat(price);
+        if (categoryId !== undefined) updateData.categoryId = categoryId;
 
         const updatedCourse = await prisma.course.update({
             where: { id: courseId },
-            data: updateData
+            data: updateData,
+            include: { category: true }
         });
 
         return res.status(200).json({

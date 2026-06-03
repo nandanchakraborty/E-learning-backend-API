@@ -52,6 +52,16 @@ model InstructorProfile {
   courses Course[]
 }
 
+model Category {
+  id        String @id @default(cuid())
+  name      String @unique
+  description String?
+  
+  createdAt DateTime @default(now())
+
+  courses   Course[]
+}
+
 model Course {
   id          String  @id @default(cuid())
   title       String
@@ -59,11 +69,13 @@ model Course {
   price       Float
   level       String
   instructorProfileId String
+  categoryId  String?
   isPublished         Boolean @default(false)
 
   createdAt DateTime @default(now())
 
   instructorProfile InstructorProfile @relation(fields: [instructorProfileId], references: [id])
+  category          Category? @relation(fields: [categoryId], references: [id])
   sections          CourseSection[]
   lessons           Lesson[]
   enrollments       Enrollment[]
