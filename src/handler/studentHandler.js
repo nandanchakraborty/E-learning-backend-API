@@ -491,5 +491,38 @@ router.get('/protectedLesson/:courseId/:courseSectionId',studentMiddleware,async
 	}
 })
 
+//course progress  tracking
+router.get('/courseProgress/:courseId/:courseSectionId',studentMiddleware,async(req,res)=>{
+	const prisma = getPrisma();
+	const userId = req.userId;
+	const {courseId,courseSectionId} = req.params
+
+    try {
+        const enrollment = await prisma.enrollment.findFirst({
+            where: { userId: userId, courseId: courseId }
+        });
+
+        if (!enrollment) {
+            return res.status(404).json({msg: 'Enrollment not found'});
+        }
+
+		const courseSectionCount = await prisma.courseSection.count({
+			where :{courseId: courseId}
+		})
+		const getSectionOrder = await prisma.courseSection.findUnique({
+			where :{id:courseSectionId}
+		})
+		if (!getSectionOrder) {
+			return res.status(404).json({msg: 'Course section not found'});
+		}
+		const courseProgress = ((getSectionOrder.order || 0) / courseSectionCount) * 100;
+		return res.status(200).json({msg:`Congratulations! You have completed ${courseProgress.toFixed(2)}% of that course`}); //toFixed(2) = 2 decimal place
+		
+	}catch(err){
+		logger.error('Course progress error:', err.message);
+		return res.status(500).json({msg:"internal server error"});
+	}
+
+})
 
 module.exports = router;
