@@ -32,6 +32,8 @@ model User {
   comments         Comment[]
   reviews          Review[]
   progressRecords  Progress[]
+  assignment       Assignment[]
+  submission       Submission[]
 }
 model InstructorProfile {
   id        String  @id @default(cuid())
@@ -78,6 +80,7 @@ model Course {
   category          Category? @relation(fields: [categoryId], references: [id])
   sections          CourseSection[]
   lessons           Lesson[]
+  assignment        Assignment[]
   enrollments       Enrollment[]
   purchases         Purchase[]
   comments          Comment[]
@@ -152,6 +155,50 @@ model Progress {
   lesson     Lesson     @relation(fields: [lessonId], references: [id])
 
   @@unique([enrollmentId, lessonId])
+}
+model Assignment {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  
+  courseId      String
+  course        Course   @relation(fields: [courseId], references: [id])
+
+  instructorId  String
+  instructor    User     @relation(fields: [instructorId], references: [id])
+
+  deadline      DateTime
+  totalMarks    Int      @default(100)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  submissions   Submission[]
+}
+model Submission {
+  id            String   @id @default(cuid())
+
+  assignmentId  String
+  assignment    Assignment @relation(fields: [assignmentId], references: [id])
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  content       String?   // text answer
+  fileUrl       String?   // uploaded file (PDF, ZIP, etc.)
+
+  marks         Int?
+  feedback      String?
+
+  status        SubmissionStatus @default(PENDING)
+
+  submittedAt   DateTime @default(now())
+}
+
+enum SubmissionStatus {
+  PENDING
+  GRADED
+  LATE
 }
 model Comment {
   id        String @id @default(cuid())
