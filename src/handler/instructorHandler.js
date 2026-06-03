@@ -412,6 +412,9 @@ router.post('/course/:courseId/section',instructorMiddleware,async(req,res)=>{
             return res.status(403).json({msg: 'Access denied. You can only delete your own courses'});
         }
         const{title,order} = req.body;
+        if(!title || !order){
+            return res.status(401).json({msg:'title and order can not be empty'})
+        }
         const courseSection = await prisma.courseSection.create({
             data:{
                 courseId,
