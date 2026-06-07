@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { getPrisma } = require("../utils/prisma");
-const { studentMiddleware } = require("../middleware/authMiddleware");
+const { studentMiddleware ,instructorMiddleware} = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
 
 /**
