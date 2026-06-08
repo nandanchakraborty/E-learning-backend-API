@@ -97,6 +97,38 @@ A scalable and production-oriented Learning Management System (LMS) backend buil
 
 ---
 
+## Project Structure
+
+```bash
+E-LEARNING-API/
+├── node_modules/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
+│
+├── src/
+│   ├── config/
+│   │   └── swagger.js              # Swagger/OpenAPI configuration
+│   │
+│   ├── handler/
+│   │   ├── adminHandler.js         # Admin-related APIs
+│   │   ├── commentAndReviewHandler.js # Comments & course reviews
+│   │   ├── instructorHandler.js    # Instructor operations
+│   │   ├── studentHandler.js       # Student operations
+│   │   └── userHandler.js          # Authentication & user management
+│   │
+│   ├── middleware/                # Authentication & authorization middleware
+│   ├── utils/                     # Helper functions and utilities
+│   └── app.js                     # Express application configuration
+│
+├── .env                           # Environment variables
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── prisma.config.ts               # Prisma configuration
+├── server.js                      # Application entry point
+└── README.md
+```
 # Database Schema
 
 ## User
