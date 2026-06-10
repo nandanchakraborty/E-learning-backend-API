@@ -642,4 +642,51 @@ router.get(
 	},
 );
 
+router.get('/dashboard/student',studentMiddleware,async(req,res)=>{
+	const userId = req.userId;
+	const prisma = getPrisma();
+	try{
+		const enrolledCourses = await prisma.enrollment.count({where: {userId :userId}});
+		const pendingAssignment = await prisma.submission.count({where:{userId:userId,status:'pending'}});
+
+		return res.status(200).json({
+			status:{
+				enrolledCourses,
+				pendingAssignment
+			}
+		})
+
+	}catch(err){
+		console.log(err);
+		res.status(500).json({msg:'internal server error '})
+	}
+})
+//search by category/level:
+router.get('/courses',studentMiddleware,async(req,res)=>{
+	const category = req.query.category;
+	const level = req.query.level;
+	const prisma = getPrisma();
+	const userId = req.id;
+	try{
+		const getCourseByCategory = await prisma.course.findUnique({
+			where:{category:category}
+		});
+		const getCoursesBylevel = await prisma.course.findUnique({
+			where:{level:level}
+		});
+		return res.status(200).json({
+			status:{
+				getCourseByCategory,
+				getCoursesBylevel
+			}
+		})
+
+	}catch(err){
+		console.log(err);
+		return res.status(500).json({msg:'internal server error'});
+
+	}
+})
+
+
 module.exports = router;

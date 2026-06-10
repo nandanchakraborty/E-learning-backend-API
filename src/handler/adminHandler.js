@@ -40,7 +40,7 @@ const { logger } = require("../utils/logger");
 
 
 // POST - Create a new admin (by existing admin)
-router.post('/create-admin', async (req, res) => {
+//router.post('/create-admin', async (req, res) => {
     const prisma = getPrisma();
     const { name, email, password } = req.body;
 
@@ -81,7 +81,7 @@ router.post('/create-admin', async (req, res) => {
         logger.error(`Error creating admin: ${err.message}`);
         return res.status(500).json({ msg: "Internal server error" });
     }
-});
+//});
 
 
 /**
