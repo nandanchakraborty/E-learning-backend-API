@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { getPrisma } = require("../utils/prisma");
 const { studentMiddleware ,instructorMiddleware} = require("../middleware/authMiddleware");
 const { logger } = require("../utils/logger");
-
+const {googleGenerativeAi, GoogleGenerativeAI} = require('@google/generative-ai')
 /**
  * @swagger
  * /stu/purchase/{courseId}:
@@ -688,5 +688,52 @@ router.get('/courses',studentMiddleware,async(req,res)=>{
 	}
 })
 
+//Ai route
+const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const model = genAi.getGenerativeModel({
+	model:'gemini-2.5-flash'
+});
+router.post('/LMS-ai',async(req,res)=>{
+	try{
+		const{assignmentText,studentName,courseTitle} = req.body;
+		if(!assignmentText){
+			return res.status(400).json({
+				msg:'assignment text is required'
+			})
+		}
+		const prompt = `
+You are a strict but fair university instructor.
+
+Student Name: ${studentName || "Unknown"}
+Course: ${courseTitle || "N/A"}
+
+Task:
+Review the following assignment and give:
+1. Short summary
+2. Strengths
+3. Weaknesses
+4. Suggestions for improvement
+5. Score out of 10
+
+Assignment:
+${assignmentText}
+`;
+const result = await model.generateContent(prompt);
+const responses = result.response.text();
+return res.status(200).json({
+	success:true,
+	feedback:responses,
+});
+
+	}catch(err){
+		console.log(err);
+		return res.status(500).json({
+			msg:'Ai service failed',
+		})
+
+	}
+
+})
 
 module.exports = router;

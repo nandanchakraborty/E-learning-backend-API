@@ -40,48 +40,48 @@ const { logger } = require("../utils/logger");
 
 
 // POST - Create a new admin (by existing admin)
-//router.post('/create-admin', async (req, res) => {
-    const prisma = getPrisma();
-    const { name, email, password } = req.body;
+// router.post('/create-admin', async (req, res) => {
+//     const prisma = getPrisma();
+//     const { name, email, password } = req.body;
 
-    try {
-        if (!name || !email || !password) {
-            return res.status(400).json({ msg: 'Name, email, and password are required' });
-        }
+//     try {
+//         if (!name || !email || !password) {
+//             return res.status(400).json({ msg: 'Name, email, and password are required' });
+//         }
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) {
-            return res.status(400).json({ msg: 'User with this email already exists' });
-        }
+//         const existingUser = await prisma.user.findUnique({ where: { email } });
+//         if (existingUser) {
+//             return res.status(400).json({ msg: 'User with this email already exists' });
+//         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+//         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const admin = await prisma.user.create({
-            data: {
-                name,
-                email,
-                passwordHash: hashedPassword,
-                role: 'admin',
-                isVerified: true,
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-            },
-        });
+//         const admin = await prisma.user.create({
+//             data: {
+//                 name,
+//                 email,
+//                 passwordHash: hashedPassword,
+//                 role: 'admin',
+//                 isVerified: true,
+//             },
+//             select: {
+//                 id: true,
+//                 name: true,
+//                 email: true,
+//                 role: true,
+//                 createdAt: true,
+//             },
+//         });
 
-        logger.info(`Admin created: ${admin.id} by admin ${req.userId}`);
-        return res.status(201).json({ admin, msg: "Admin created successfully" });
+//         logger.info(`Admin created: ${admin.id} by admin ${req.userId}`);
+//         return res.status(201).json({ admin, msg: "Admin created successfully" });
 
-    } catch (err) {
-        console.error(err);
-        logger.error(`Error creating admin: ${err.message}`);
-        return res.status(500).json({ msg: "Internal server error" });
-    }
-//});
+//     } catch (err) {
+//         console.error(err);
+//         logger.error(`Error creating admin: ${err.message}`);
+//         return res.status(500).json({ msg: "Internal server error" });
+//     }
+// });
 
 
 /**
