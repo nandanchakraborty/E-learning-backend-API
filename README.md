@@ -47,14 +47,16 @@ A scalable and production-oriented Learning Management System (LMS) backend buil
 * Lesson Completion Tracking
 * Learning Analytics
 
-## Assignment System
+## Assignment System and Ai assignment feedback provider
+
 
 * Create Assignments
 * Assignment Deadlines
 * Marks & Grading System
 * Student Submission Tracking
 * Instructor Feedback
-* Submission Status Management
+* Submission Status Management and
+* AI assignemt feedback  provider
 
 ## Payment & Purchase Management
 
