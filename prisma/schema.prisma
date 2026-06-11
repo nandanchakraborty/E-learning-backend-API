@@ -52,6 +52,7 @@ model InstructorProfile {
 
   user    User @relation(fields: [userId], references: [id])
   courses Course[]
+  @@index([userId])
 }
 
 model Category {
@@ -85,6 +86,7 @@ model Course {
   purchases         Purchase[]
   comments          Comment[]
   reviews           Review[]
+  @@index([instructorProfileId])
 }
 model CourseSection {
   id        String @id @default(cuid())
@@ -97,6 +99,7 @@ model CourseSection {
 
   course Course @relation(fields: [courseId], references: [id])
   lessons Lesson[]
+  @@index([courseId])
 }
 model Lesson {
   id        String @id @default(cuid())
@@ -111,6 +114,7 @@ model Lesson {
   section   CourseSection @relation(fields: [courseSectionId], references: [id])
   course    Course @relation(fields: [courseId], references: [id])
   progressRecords Progress[]
+  @@index([courseSectionId])
 }
 model Purchase {
   id        String @id @default(cuid())
@@ -124,6 +128,7 @@ model Purchase {
 
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
+@@unique([userId,courseId])
 }
 model Enrollment {
   id        String @id @default(cuid())
@@ -137,6 +142,8 @@ model Enrollment {
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
   progressRecords Progress[]
+
+  @@index([userId])
 }
 model Progress {
   id        String @id @default(cuid())
@@ -174,6 +181,7 @@ model Assignment {
   updatedAt     DateTime @updatedAt
 
   submissions   Submission[]
+  @@index([courseId])
 }
 model Submission {
   id            String   @id @default(cuid())
@@ -193,6 +201,9 @@ model Submission {
   status        SubmissionStatus @default(PENDING)
 
   submittedAt   DateTime @default(now())
+  @@index([assignmentId])
+@@index([userId])
+@@unique([assignmentId, userId])
 }
 
 enum SubmissionStatus {
@@ -211,6 +222,7 @@ model Comment {
 
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
+@@index([courseId])
 }
 model Review {
   id        String @id @default(cuid())
@@ -224,4 +236,5 @@ model Review {
 
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
+@@index([courseId])
 }
