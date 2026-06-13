@@ -1,558 +1,395 @@
-# Learning Management System (LMS) API
+# Learning Management System (LMS) Backend API
 
-A scalable and production-oriented Learning Management System (LMS) backend built with Node.js, Express.js, PostgreSQL, and Prisma ORM. The platform supports role-based authentication, instructor onboarding, course creation, student enrollment, lesson progress tracking, assignments, submissions, reviews, and administrative management.
+A scalable and production-ready Learning Management System (LMS) backend built with **Node.js**, **Express.js**, **PostgreSQL**, and **Prisma ORM**.
+
+The platform supports authentication, instructor onboarding, course management, student enrollment, lesson progress tracking, assignments, AI-powered assignment feedback, reviews, and administrative operations.
 
 ---
 
-# Features
+# Overview
+
+This project is designed to simulate a real-world e-learning platform similar to Udemy, Coursera, or Skillshare.
+
+The API provides:
+
+* Secure Authentication & Authorization
+* Instructor Management
+* Course Creation & Publishing
+* Student Enrollment
+* Lesson Progress Tracking
+* Assignment & Submission Management
+* AI-Powered Assignment Feedback
+* Reviews & Comments
+* Administrative Controls
+* Interactive API Documentation
+
+---
+
+# Tech Stack
+
+| Technology        | Purpose                |
+| ----------------- | ---------------------- |
+| Node.js           | Runtime Environment    |
+| Express.js        | Backend Framework      |
+| PostgreSQL        | Relational Database    |
+| Prisma ORM        | Database ORM           |
+| JWT               | Authentication         |
+| bcrypt            | Password Hashing       |
+| Swagger           | API Documentation      |
+| Google Gemini API | AI Assignment Feedback |
+
+---
+
+# Key Features
 
 ## Authentication & Authorization
 
 * JWT Authentication
-* Secure Password Hashing
+* Refresh Token Support
 * Role-Based Access Control (RBAC)
 * Student, Instructor, and Admin Roles
-* Google OAuth Ready
-* Email Verification Support
-* Refresh Token Support
+* Google OAuth Authentication
+* Email Verification
+
+---
 
 ## Instructor Management
 
 * Instructor Profile Creation
 * Instructor Approval Workflow
-* Expertise & Skills Management
-* Instructor Rating Tracking
-* Student Count Analytics
+* Skills & Expertise Management
+* Instructor Ratings
+* Student Analytics
+
+---
 
 ## Course Management
 
-* Create, Update, Delete Courses
-* Course Publishing System
+* Create Courses
+* Update Courses
+* Delete Courses
+* Publish Courses
 * Course Categories
-* Course Difficulty Levels
+* Difficulty Levels
 * Course Thumbnail Support
-* Course Reviews and Ratings
 
-## Course Content Management
+---
+
+## Course Content
 
 * Course Sections
 * Video Lessons
-* Ordered Learning Paths
-* Structured Curriculum Design
+* Ordered Curriculum Structure
+* Learning Path Management
 
-## Enrollment & Progress Tracking
+---
 
-* Student Enrollment
-* Course Progress Monitoring
+## Student Features
+
+* Course Enrollment
+* Progress Tracking
 * Lesson Completion Tracking
 * Learning Analytics
 
-## Assignment System and Ai assignment feedback provider
+---
 
+## Assignment System
 
-* Create Assignments
-* Assignment Deadlines
-* Marks & Grading System
-* Student Submission Tracking
+* Assignment Creation
+* Submission Tracking
+* Deadline Management
+* Marks & Grading
 * Instructor Feedback
-* Submission Status Management and
-* AI assignemt feedback  provider
+* Submission Status Tracking
+* AI Assignment Feedback
 
-## Payment & Purchase Management
-
-* Course Purchase System
-* Payment Status Tracking
-* Purchase History
+---
 
 ## Community Features
 
-* Course Comments
 * Course Reviews
-* Rating System
+* Course Ratings
+* Discussion Comments
 
-## Admin Features
+---
+
+## Administrative Features
 
 * User Management
 * Course Moderation
 * Instructor Approval
-* Platform Analytics
-* Enrollment Statistics
-
-## API Documentation
-
-* Swagger/OpenAPI Documentation
-* Interactive API Testing
+* Enrollment Analytics
+* Platform Statistics
 
 ---
 
-# Technology Stack
-
-| Technology | Purpose             |
-| ---------- | ------------------- |
-| Node.js    | Runtime Environment |
-| Express.js | Backend Framework   |
-| PostgreSQL | Relational Database |
-| Prisma ORM | Database ORM        |
-| JWT        | Authentication      |
-| bcrypt     | Password Security   |
-| Swagger    | API Documentation   |
-
----
-
-## Project Structure
+# Project Structure
 
 ```bash
 E-LEARNING-API/
-├── node_modules/
+│
 ├── prisma/
 │   ├── migrations/
 │   └── schema.prisma
 │
 ├── src/
 │   ├── config/
-│   │   └── swagger.js              # Swagger/OpenAPI configuration
+│   │   └── swagger.js
 │   │
 │   ├── handler/
-│   │   ├── adminHandler.js         # Admin-related APIs
-│   │   ├── commentAndReviewHandler.js # Comments & course reviews
-│   │   ├── instructorHandler.js    # Instructor operations
-│   │   ├── studentHandler.js       # Student operations
-│   │   └── userHandler.js          # Authentication & user management
+│   │   ├── adminHandler.js
+│   │   ├── commentAndReviewHandler.js
+│   │   ├── instructorHandler.js
+│   │   ├── studentHandler.js
+│   │   └── userHandler.js
 │   │
-│   ├── middleware/                # Authentication & authorization middleware
-│   ├── utils/                     # Helper functions and utilities
-│   └── app.js                     # Express application configuration
+│   ├── middleware/
+│   ├── utils/
+│   └── app.js
 │
-├── .env                           # Environment variables
-├── .gitignore
+├── .env
+├── server.js
 ├── package.json
-├── package-lock.json
-├── prisma.config.ts               # Prisma configuration
-├── server.js                      # Application entry point
+├── prisma.config.ts
 └── README.md
 ```
-# Database Schema
 
-## User
+---
 
-Stores all platform users including students, instructors, and administrators.
+# Database Design
+
+The application uses PostgreSQL because the LMS contains highly relational data.
+
+### Main Relationships
 
 ```text
 User
-├── id
-├── name
-├── email
-├── passwordHash
-├── provider
-├── role
-├── isVerified
-├── isOnboarded
-├── refreshToken
-├── createdAt
-└── updatedAt
-```
+ ├── Enrollment
+ ├── Purchase
+ ├── Review
+ └── Submission
 
----
+Instructor
+ └── Course
 
-## InstructorProfile
-
-Contains instructor-specific information and approval status.
-
-```text
-InstructorProfile
-├── id
-├── userId
-├── bio
-├── expertise
-├── linkedin
-├── skills
-├── status
-├── totalStudents
-├── rating
-└── createdAt
-```
-
----
-
-## Category
-
-Used to organize courses into logical groups.
-
-```text
-Category
-├── id
-├── name
-├── description
-└── createdAt
-```
-
----
-
-## Course
-
-Represents learning programs offered by instructors.
-
-```text
 Course
-├── id
-├── title
-├── description
-├── price
-├── level
-├── instructorProfileId
-├── categoryId
-├── thumbnailUrl
-├── isPublished
-└── createdAt
-```
+ ├── Sections
+ ├── Lessons
+ ├── Assignments
+ ├── Reviews
+ └── Enrollments
 
----
-
-## CourseSection
-
-Groups lessons into structured sections.
-
-```text
-CourseSection
-├── id
-├── courseId
-├── title
-├── order
-└── createdAt
-```
-
----
-
-## Lesson
-
-Represents individual learning content.
-
-```text
-Lesson
-├── id
-├── courseId
-├── courseSectionId
-├── title
-├── videoUrl
-├── order
-└── createdAt
-```
-
----
-
-## Purchase
-
-Stores payment records for purchased courses.
-
-```text
-Purchase
-├── id
-├── userId
-├── courseId
-├── amount
-├── status
-└── createdAt
-```
-
----
-
-## Enrollment
-
-Tracks student enrollment in courses.
-
-```text
-Enrollment
-├── id
-├── userId
-├── courseId
-├── progress
-└── createdAt
-```
-
-Unique Constraint:
-
-```text
-(userId, courseId)
-```
-
-Prevents duplicate enrollments.
-
----
-
-## Progress
-
-Tracks lesson completion progress.
-
-```text
-Progress
-├── id
-├── userId
-├── enrollmentId
-├── lessonId
-├── isCompleted
-├── completedAt
-├── createdAt
-└── updatedAt
-```
-
-Unique Constraint:
-
-```text
-(enrollmentId, lessonId)
-```
-
-Ensures one progress record per lesson.
-
----
-
-## Assignment
-
-Stores course assignments.
-
-```text
 Assignment
-├── id
-├── title
-├── description
-├── courseId
-├── instructorId
-├── deadline
-├── totalMarks
-├── createdAt
-└── updatedAt
+ └── Submission
+```
+
+### Why PostgreSQL?
+
+* Strong relational modeling
+* ACID compliance
+* Data integrity through foreign keys
+* Transaction support
+* Advanced indexing
+* Scalable analytics queries
+* Excellent Prisma integration
+
+---
+
+# Prerequisites
+
+Before running the project, ensure the following software is installed:
+
+### Node.js
+
+```bash
+node -v
+```
+
+Recommended:
+
+```text
+v20+
+```
+
+### PostgreSQL
+
+```bash
+psql --version
+```
+
+Recommended:
+
+```text
+PostgreSQL 15+
+```
+
+### Git
+
+```bash
+git --version
 ```
 
 ---
 
-## Submission
+# Installation Guide
 
-Stores assignment submissions.
+## Step 1: Clone Repository
 
-```text
-Submission
-├── id
-├── assignmentId
-├── userId
-├── content
-├── fileUrl
-├── marks
-├── feedback
-├── status
-└── submittedAt
+```bash
+git clone https://github.com/nandanchakraborty/E-learning-backend-API.git
 ```
 
-Unique Constraint:
+Move into the project directory:
 
-```text
-(assignmentId, userId)
-```
-
-Prevents multiple submissions from the same student.
-
----
-
-## Comment
-
-Stores course discussion comments.
-
-```text
-Comment
-├── id
-├── userId
-├── courseId
-├── content
-└── createdAt
+```bash
+cd E-learning-backend-API
 ```
 
 ---
 
-## Review
+## Step 2: Install Dependencies
 
-Stores course ratings and feedback.
-
-```text
-Review
-├── id
-├── userId
-├── courseId
-├── rating
-├── comment
-└── createdAt
+```bash
+npm install
 ```
-
-Unique Constraint:
-
-```text
-(userId, courseId)
-```
-
-Prevents duplicate reviews.
 
 ---
 
-# Database Design Decisions
+## Step 3: Create PostgreSQL Database
 
-## Why PostgreSQL?
+Login to PostgreSQL:
 
-This project uses PostgreSQL as its primary database because the Learning Management System contains highly structured and interconnected data.
-
-The platform manages relationships between:
-
-* Users
-* Instructors
-* Courses
-* Categories
-* Lessons
-* Enrollments
-* Assignments
-* Submissions
-* Purchases
-* Reviews
-
-These entities depend heavily on relational integrity, making PostgreSQL an ideal choice.
-
-### 1. Strong Relational Modeling
-
-The LMS contains numerous one-to-many and many-to-many relationships.
-
-Examples:
-
-```text
-User → Enrollment
-User → Purchase
-User → Review
-
-Course → Lessons
-Course → Assignments
-Course → Reviews
-
-Assignment → Submission
+```bash
+psql -U postgres
 ```
 
-PostgreSQL efficiently manages these relationships using foreign keys and joins.
+Create database:
 
-### 2. Data Integrity
-
-Foreign key constraints ensure:
-
-* Invalid enrollments cannot be created.
-* Reviews always belong to existing courses.
-* Assignments always belong to valid courses.
-* Submissions always belong to existing assignments.
-
-This guarantees consistent and reliable data.
-
-### 3. ACID Compliance
-
-PostgreSQL follows ACID principles:
-
-* Atomicity
-* Consistency
-* Isolation
-* Durability
-
-These properties are essential for:
-
-* Course purchases
-* Student enrollments
-* Assignment submissions
-* Progress tracking
-
-where data accuracy is critical.
-
-### 4. Excellent Prisma Integration
-
-PostgreSQL works seamlessly with Prisma ORM and provides:
-
-* Type-safe queries
-* Schema migrations
-* Better developer experience
-* Improved maintainability
-
-### 5. Scalability
-
-PostgreSQL can efficiently handle:
-
-* Large numbers of users
-* Thousands of courses
-* Assignment submissions
-* Progress records
-* Payment transactions
-
-while maintaining performance and reliability.
-
-### 6. Advanced Query Capabilities
-
-PostgreSQL supports:
-
-* Aggregations
-* Analytics Queries
-* Complex Joins
-* Indexing
-* Transactions
-
-which are useful for generating:
-
-* Admin dashboards
-* Enrollment reports
-* Instructor statistics
-* Course analytics
+```sql
+CREATE DATABASE lms_db;
+```
 
 ---
 
-## Why Not MongoDB?
+## Step 4: Configure Environment Variables
 
-MongoDB is designed for flexible and document-based data.
+Create a `.env` file in the project root.
 
-However, an LMS contains highly relational entities where consistency and relationships are more important than schema flexibility.
+Example:
 
-Using MongoDB would result in:
+```env
+PORT=3000
 
-* More complex relationship management
-* Data duplication
-* Additional application-level validation
+DATABASE_URL="postgresql://postgres:password@localhost:5432/lms_db"
 
-PostgreSQL provides a cleaner and more maintainable solution for this use case.
+JWT_SECRET=your_jwt_secret
+
+JWT_REFRESH_SECRET=your_refresh_secret
+
+GOOGLE_CLIENT_ID=your_google_client_id
+
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Replace all values with your own credentials.
+
+---
+
+## Step 5: Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+---
+
+## Step 6: Run Database Migrations
+
+```bash
+npx prisma migrate dev
+```
+
+This command:
+
+* Creates database tables
+* Applies migrations
+* Updates Prisma Client
+
+---
+
+## Step 7: Start Development Server
+
+```bash
+npm run dev
+```
+
+You should see:
+
+```bash
+Server running on port 3000
+```
 
 ---
 
 # API Documentation
 
-Swagger documentation is available at:
+Swagger documentation is automatically generated.
 
-```bash
+Open:
+
+```text
 http://localhost:3000/docs
 ```
 
+Features:
+
+* API endpoint documentation
+* Request examples
+* Response examples
+* Interactive API testing
+
 ---
 
-# Installation
+# Useful Prisma Commands
+
+Generate Prisma Client:
 
 ```bash
-git clone <repository-url>
-cd lms-api
-
-npm install
-
 npx prisma generate
-npx prisma migrate dev
+```
 
-npm run dev
+Create Migration:
+
+```bash
+npx prisma migrate dev --name migration_name
+```
+
+Open Prisma Studio:
+
+```bash
+npx prisma studio
+```
+
+Reset Database:
+
+```bash
+npx prisma migrate reset
 ```
 
 ---
 
-# Environment Variables
+# AI Assignment Feedback
 
-```env
-PORT=3000
+The platform integrates Google Gemini API to provide AI-generated assignment feedback.
 
-DATABASE_URL=postgresql://username:password@localhost:5432/lms_db
+Capabilities:
 
-JWT_SECRET=your_secret_key
-
-JWT_REFRESH_SECRET=your_refresh_secret
-```
+* Assignment Evaluation
+* Improvement Suggestions
+* Learning Guidance
+* Feedback Generation
 
 ---
 
@@ -564,13 +401,16 @@ JWT_REFRESH_SECRET=your_refresh_secret
 * Discussion Forums
 * Real-Time Notifications
 * Payment Gateway Integration
-* AI-Powered Course Recommendations
+* AI Course Recommendations
+* Video Streaming Optimization
+* Course Wishlist
+* Student Dashboard Analytics
 
 ---
 
 # Author
 
-Nandan Chakraborty
+**Nandan Chakraborty**
 
 B.Sc. in Computer Science and Engineering
 
@@ -580,4 +420,4 @@ Dhaka, Bangladesh
 
 # License
 
-MIT License
+This project is licensed under the MIT License.
